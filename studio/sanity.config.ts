@@ -9,8 +9,8 @@ const projectId = process.env.SANITY_STUDIO_PROJECT_ID!
 const dataset = process.env.SANITY_STUDIO_DATASET!
 
 export default defineConfig({
-  name: 'sanity-template-sveltekit-clean',
-  title: 'Clean SvelteKit + Sanity app',
+  name: 'portfolio-studio',
+  title: 'Anthony Helliet - Portfolio Studio',
   projectId,
   dataset,
   plugins: [
