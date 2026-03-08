@@ -10,7 +10,7 @@ const dataset = process.env.SANITY_STUDIO_DATASET!
 
 export default defineConfig({
   name: 'portfolio-studio',
-  title: 'Anthony Helliet - Portfolio Studio',
+  title: 'Portfolio Studio',
   projectId,
   dataset,
   plugins: [
