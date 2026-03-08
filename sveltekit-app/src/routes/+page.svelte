@@ -1,7 +1,6 @@
 <script lang="ts">
   import {useQuery} from '@sanity/sveltekit'
   import Card from '../components/Card.svelte'
-  import Welcome from '../components/Welcome.svelte'
   import type {PageProps} from './$types'
 
   const {data}: PageProps = $props()
@@ -15,6 +14,6 @@
       <Card {post} />
     {/each}
   {:else}
-    <Welcome />
+    <p>No posts found</p>
   {/if}
 </section>
