@@ -20,7 +20,9 @@
   },
   "dependencies": {
     "@sanity/image-url": "^2.0.3",
-    "groq": "^5.7.0"
+    "groq": "^5.7.0",
+    "mermaid": "^11.12.3",
+    "shiki": "^4.0.2"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^5.0.1",

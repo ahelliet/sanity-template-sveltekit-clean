@@ -3,11 +3,20 @@
   import {PortableText} from '@portabletext/svelte'
   import {formatDate} from '$lib/utils'
   import {urlFor} from '$lib/sanity/image'
+  import Code from '$lib/components/portable-text/Code.svelte'
+  import Mermaid from '$lib/components/portable-text/Mermaid.svelte'
   import type {PageProps} from './$types'
 
   const {data}: PageProps = $props()
   const query = $derived(useQuery(data))
   const post = $derived($query.data)
+
+  const components = {
+    types: {
+      code: Code,
+      mermaid: Mermaid,
+    },
+  }
 </script>
 
 {#if post}
@@ -31,7 +40,7 @@
       </p>
       {#if post.body}
         <div class="post__content">
-          <PortableText components={{}} value={post.body} />
+          <PortableText {components} value={post.body} />
         </div>
       {/if}
     </div>
