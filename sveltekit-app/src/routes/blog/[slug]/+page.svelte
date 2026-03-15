@@ -3,13 +3,14 @@
   import {PortableText} from '@portabletext/svelte'
   import {formatDate} from '$lib/utils/index'
   import {urlFor} from '$lib/sanity/image'
-  import Code from '../../../components/Code.svelte'
-  import Mermaid from '../../../components/Mermaid.svelte'
+  import Code from '$lib/components/Code.svelte'
+  import Mermaid from '$lib/components/Mermaid.svelte'
   import type {PageProps} from './$types'
 
   const {data}: PageProps = $props()
   const query = $derived(useQuery(data))
   const post = $derived($query.data)
+  const author = $derived(data.layout)
 
   const components = {
     types: {
@@ -24,12 +25,12 @@
     <header class="article__header">
       <h1 class="article__title">{post.title}</h1>
       <div class="article__meta">
-        {#if post.author}
+        {#if author?.authorName}
           <div class="article__author">
-            {#if post.author.avatar}
-              <img src={urlFor(post.author.avatar).width(32).height(32).url()} alt={post.author.name} class="article__author-avatar" />
+            {#if author.authorAvatar}
+              <img src={urlFor(author.authorAvatar).width(32).height(32).url()} alt={author.authorName} class="article__author-avatar" />
             {/if}
-            <span>{post.author.name}</span>
+            <span>{author.authorName}</span>
           </div>
         {/if}
         <span>{formatDate(post._createdAt)}</span>
@@ -60,14 +61,14 @@
       </div>
     {/if}
 
-    {#if post.author?.bio}
+    {#if author?.authorBio}
       <div class="article__author-block">
-        {#if post.author.avatar}
-          <img src={urlFor(post.author.avatar).width(64).height(64).url()} alt={post.author.name} class="article__author-block-avatar" />
+        {#if author.authorAvatar}
+          <img src={urlFor(author.authorAvatar).width(64).height(64).url()} alt={author.authorName} class="article__author-block-avatar" />
         {/if}
         <div>
-          <p class="article__author-block-name">{post.author.name}</p>
-          <p class="article__author-block-bio">{post.author.bio}</p>
+          <p class="article__author-block-name">{author.authorName}</p>
+          <p class="article__author-block-bio">{author.authorBio}</p>
         </div>
       </div>
     {/if}

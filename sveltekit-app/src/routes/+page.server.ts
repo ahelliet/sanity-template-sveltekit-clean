@@ -1,12 +1,15 @@
-import {homePageQuery as query, type HomePage} from '$lib/sanity/queries'
+import {homepageQuery, postsQuery, projectsQuery} from '$lib/sanity/queries'
+import type {Page, Post, Project} from '$lib/sanity/queries'
 import type {PageServerLoad} from './$types'
 
 export const load: PageServerLoad = async ({locals}) => {
   const {loadQuery} = locals.sanity
-  const initial = await loadQuery<HomePage>(query)
+  const [{data: page}, {data: posts}, {data: projects}] =
+    await Promise.all([
+      loadQuery<Page>(homepageQuery),
+      loadQuery<Post[]>(postsQuery),
+      loadQuery<Project[]>(projectsQuery),
+    ])
 
-  return {
-    query,
-    options: {initial},
-  }
+  return {page, posts, projects}
 }

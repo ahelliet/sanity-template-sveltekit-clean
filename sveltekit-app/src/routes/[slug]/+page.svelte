@@ -11,8 +11,4 @@
 		posts={data.posts}
 		projects={data.projects}
 	/>
-{:else}
-	<div class="flex min-h-[50vh] items-center justify-center">
-		<p class="text-muted-foreground">Aucune page d'accueil configurée.</p>
-	</div>
 {/if}

@@ -2,6 +2,189 @@ import type {PortableTextBlock} from '@portabletext/types'
 import type {ImageAsset, Slug} from '@sanity/types'
 import groq from 'groq'
 
+// ─── Pages (page builder) ────────────────────────────────
+
+const linkProjection = `{
+  ...,
+  link {
+    ...,
+    internalLink->{_type, slug, title},
+    "mediaUrl": mediaLink.asset->url,
+    "mediaOriginalFilename": mediaLink.asset->originalFilename
+  }
+}`
+
+const sectionsProjection = `sections[] {
+  ...,
+  _type == "section.hero" => {
+    ...,
+    ctas[] ${linkProjection}
+  }
+}`
+
+export const pageBySlugQuery = groq`*[_type == "page" && slug.current == $slug][0] {
+  _type,
+  title,
+  slug,
+  ${sectionsProjection}
+}`
+
+export const homepageQuery = groq`*[_type == "homePage"][0] {
+  _type,
+  ${sectionsProjection}
+}`
+
+// ─── Section types ───────────────────────────────────────
+
+export interface SanityLink {
+  linkType?: 'internal' | 'external' | 'media'
+  internalLink?: {_type: string; slug?: Slug; title?: string}
+  anchor?: string
+  externalUrl?: string
+  openInNewTab?: boolean
+  mediaUrl?: string
+  mediaOriginalFilename?: string
+  downloadFilename?: string
+}
+
+export interface HeroCta {
+  label?: string
+  link?: SanityLink
+  icon?: string
+  variant?: 'default' | 'outline' | 'secondary' | 'ghost'
+}
+
+export interface SectionHero {
+  _type: 'section.hero'
+  _key: string
+  badge?: string
+  title?: string
+  tagline?: string
+  subtitle?: string
+  image?: ImageAsset
+  ctas?: HeroCta[]
+}
+
+export interface SectionPageHeader {
+  _type: 'section.pageHeader'
+  _key: string
+  title?: string
+  description?: string
+}
+
+export interface SectionRichText {
+  _type: 'section.richText'
+  _key: string
+  sectionNumber?: string
+  sectionLabel?: string
+  title?: string
+  body?: PortableTextBlock[]
+  image?: ImageAsset
+  imagePosition?: 'left' | 'right'
+  alternateBackground?: boolean
+}
+
+export interface SectionGrid {
+  _type: 'section.grid'
+  _key: string
+  sectionNumber?: string
+  sectionLabel?: string
+  title?: string
+  source?: 'posts' | 'projects'
+  limit?: number
+  viewAllLabel?: string
+  viewAllHref?: string
+  alternateBackground?: boolean
+}
+
+export interface SectionCta {
+  _type: 'section.cta'
+  _key: string
+  title?: string
+  description?: string
+  button?: {label?: string; href?: string}
+  alternateBackground?: boolean
+}
+
+export interface SectionMetrics {
+  _type: 'section.metrics'
+  _key: string
+  sectionNumber?: string
+  sectionLabel?: string
+  title?: string
+  items?: {value: string; label: string; description?: string}[]
+  alternateBackground?: boolean
+}
+
+export interface SectionImage {
+  _type: 'section.image'
+  _key: string
+  image?: ImageAsset
+  alt?: string
+  fullWidth?: boolean
+}
+
+export interface SectionContact {
+  _type: 'section.contact'
+  _key: string
+  sectionNumber?: string
+  sectionLabel?: string
+  title?: string
+  description?: string
+  email?: string
+  alternateBackground?: boolean
+}
+
+export interface SectionTestimonials {
+  _type: 'section.testimonials'
+  _key: string
+  sectionNumber?: string
+  sectionLabel?: string
+  title?: string
+  items?: {name: string; role?: string; content: string; avatar?: ImageAsset}[]
+  alternateBackground?: boolean
+}
+
+export interface ToolItem {
+  name: string
+  description?: string
+  icon?: ImageAsset
+}
+
+export interface ToolCategory {
+  name?: string
+  items?: ToolItem[]
+}
+
+export interface SectionTools {
+  _type: 'section.tools'
+  _key: string
+  sectionNumber?: string
+  sectionLabel?: string
+  title?: string
+  categories?: ToolCategory[]
+  alternateBackground?: boolean
+}
+
+export type Section =
+  | SectionHero
+  | SectionPageHeader
+  | SectionRichText
+  | SectionGrid
+  | SectionCta
+  | SectionMetrics
+  | SectionImage
+  | SectionContact
+  | SectionTestimonials
+  | SectionTools
+
+export interface Page {
+  _type: 'page'
+  title?: string
+  slug?: Slug
+  sections?: Section[]
+}
+
 // ─── Posts ───────────────────────────────────────────────
 
 export const postsQuery = groq`*[_type == "post" && defined(slug.current)] | order(_createdAt desc) {
@@ -12,8 +195,7 @@ export const postsQuery = groq`*[_type == "post" && defined(slug.current)] | ord
   excerpt,
   mainImage,
   tags,
-  readingTime,
-  author->{name, avatar}
+  readingTime
 }`
 
 export const postQuery = groq`*[_type == "post" && slug.current == $slug][0] {
@@ -26,7 +208,6 @@ export const postQuery = groq`*[_type == "post" && slug.current == $slug][0] {
   tags,
   readingTime,
   body,
-  author->{name, avatar, bio},
   relatedPosts[]->{
     _type,
     _createdAt,
@@ -39,12 +220,6 @@ export const postQuery = groq`*[_type == "post" && slug.current == $slug][0] {
   }
 }`
 
-export interface Author {
-  name: string
-  avatar?: ImageAsset
-  bio?: string
-}
-
 export interface Post {
   _type: 'post'
   _createdAt: string
@@ -55,7 +230,6 @@ export interface Post {
   tags?: string[]
   readingTime?: number
   body?: PortableTextBlock[]
-  author?: Author
   relatedPosts?: Post[]
 }
 
@@ -104,56 +278,45 @@ export interface Project {
   stack?: StackItem[]
 }
 
-// ─── Home Page ───────────────────────────────────────────
+// ─── Layout (Nav + Footer) ───────────────────────────────
 
-export const homePageQuery = groq`{
-  "settings": *[_type == "homePage"][0],
-  "posts": *[_type == "post" && defined(slug.current)] | order(_createdAt desc) [0...3] {
-    _type, _createdAt, title, slug, excerpt, mainImage, tags, readingTime,
-    author->{name, avatar}
+export const layoutQuery = groq`*[_type == "siteSettings"][0] {
+  title,
+  logo,
+  authorName,
+  authorAvatar,
+  authorBio,
+  navLinks[] {
+    ...,
+    internalLink->{_type, slug, title},
+    "mediaUrl": mediaLink.asset->url,
+    "mediaOriginalFilename": mediaLink.asset->originalFilename
   },
-  "projects": *[_type == "project" && defined(slug.current)] | order(_createdAt desc) [0...4] {
-    _type, _createdAt, title, slug, description, mainImage, tags, year
-  },
-  "testimonials": *[_type == "testimonial"] | order(_createdAt desc),
-  "tools": *[_type == "tool"] | order(category asc, name asc)
+  socialLinks,
+  footerCopyright,
+  footerLinks
 }`
 
-export interface SiteSettings {
-  heroTitle?: string
-  heroSubtitle?: string
-  aboutTitle?: string
-  aboutContent?: PortableTextBlock[]
-  toolsTitle?: string
-  projectsTitle?: string
-  blogTitle?: string
-  testimonialsTitle?: string
-  ctaTitle?: string
-  ctaDescription?: string
-  contactEmail?: string
+export interface NavLink {
+  label?: string
+  linkType?: 'internal' | 'external' | 'media'
+  internalLink?: {_type: string; slug?: Slug; title?: string}
+  anchor?: string
+  externalUrl?: string
+  openInNewTab?: boolean
+  mediaUrl?: string
+  rightSide?: boolean
+  style?: 'link' | 'default' | 'secondary' | 'outline' | 'ghost' | 'destructive'
+}
+
+export interface LayoutData {
+  title?: string
+  logo?: ImageAsset
+  authorName?: string
+  authorAvatar?: ImageAsset
+  authorBio?: string
+  navLinks?: NavLink[]
   socialLinks?: {platform: string; url: string}[]
-}
-
-export interface Testimonial {
-  _type: 'testimonial'
-  name: string
-  role?: string
-  content: string
-  avatar?: ImageAsset
-}
-
-export interface Tool {
-  _type: 'tool'
-  name: string
-  description?: string
-  icon?: ImageAsset
-  category?: string
-}
-
-export interface HomePage {
-  settings: SiteSettings
-  posts: Post[]
-  projects: Project[]
-  testimonials: Testimonial[]
-  tools: Tool[]
+  footerCopyright?: string
+  footerLinks?: {label: string; href: string}[]
 }

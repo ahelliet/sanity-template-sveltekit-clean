@@ -2,8 +2,8 @@
   import {useQuery} from '@sanity/sveltekit'
   import {PortableText} from '@portabletext/svelte'
   import {urlFor} from '$lib/sanity/image'
-  import Code from '../../../components/Code.svelte'
-  import Mermaid from '../../../components/Mermaid.svelte'
+  import Code from '$lib/components/Code.svelte'
+  import Mermaid from '$lib/components/Mermaid.svelte'
   import type {PageProps} from './$types'
 
   const {data}: PageProps = $props()
