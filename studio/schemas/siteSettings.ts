@@ -7,6 +7,7 @@ export default defineType({
   type: 'document',
   groups: [
     {name: 'global', title: 'Global', default: true},
+    {name: 'author', title: 'Auteur'},
     {name: 'navigation', title: 'Navigation'},
     {name: 'social', title: 'Réseaux sociaux'},
     {name: 'footer', title: 'Footer'},
@@ -52,6 +53,28 @@ export default defineType({
       type: 'image',
       group: 'global',
     }),
+    // ─── Auteur ───
+    defineField({
+      name: 'authorName',
+      title: 'Nom',
+      type: 'string',
+      group: 'author',
+    }),
+    defineField({
+      name: 'authorAvatar',
+      title: 'Avatar',
+      type: 'image',
+      options: {hotspot: true},
+      group: 'author',
+    }),
+    defineField({
+      name: 'authorBio',
+      title: 'Bio',
+      type: 'text',
+      rows: 3,
+      group: 'author',
+    }),
+
     defineField({
       name: 'socialLinks',
       title: 'Social Links',
@@ -89,7 +112,6 @@ export default defineType({
               options: {
                 list: [
                   {title: 'Interne', value: 'internal'},
-                  {title: 'Ancre (#)', value: 'anchor'},
                   {title: 'Externe', value: 'external'},
                 ],
                 layout: 'radio',
@@ -101,15 +123,15 @@ export default defineType({
               name: 'internalLink',
               title: 'Page',
               type: 'reference',
-              to: [{type: 'post'}, {type: 'project'}],
+              to: [{type: 'homePage'}, {type: 'page'}, {type: 'post'}, {type: 'project'}],
               hidden: ({parent}) => parent?.linkType !== 'internal',
             }),
             defineField({
               name: 'anchor',
               title: 'Ancre',
               type: 'string',
-              description: 'Ex: #about, #contact',
-              hidden: ({parent}) => parent?.linkType !== 'anchor',
+              description: 'Saisir uniquement le nom, sans # ni / (ex: a-propos, contact)',
+              hidden: ({parent}) => parent?.linkType !== 'internal',
             }),
             defineField({
               name: 'externalUrl',

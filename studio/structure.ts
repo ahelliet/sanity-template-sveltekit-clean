@@ -1,5 +1,5 @@
 import type {StructureResolver} from 'sanity/structure'
-import {CogIcon, DocumentTextIcon, DatabaseIcon} from '@sanity/icons'
+import {CogIcon, HomeIcon, DocumentTextIcon, FolderIcon} from '@sanity/icons'
 
 export const structure: StructureResolver = (S) =>
   S.list()
@@ -20,50 +20,21 @@ export const structure: StructureResolver = (S) =>
 
       // ─── Pages ───
       S.listItem()
-        .title('Pages')
-        .icon(DocumentTextIcon)
+        .title('Accueil')
+        .icon(HomeIcon)
         .child(
-          S.list()
-            .title('Pages')
-            .items([
-              S.listItem()
-                .title('Accueil')
-                .child(
-                  S.document()
-                    .schemaType('homePage')
-                    .documentId('homePage')
-                    .title('Page d\'accueil'),
-                ),
-              S.listItem()
-                .title('Blog')
-                .child(
-                  S.documentTypeList('post')
-                    .title('Articles du blog'),
-                ),
-              S.listItem()
-                .title('Projets')
-                .child(
-                  S.documentTypeList('project')
-                    .title('Liste des projets'),
-                ),
-            ]),
+          S.document()
+            .schemaType('homePage')
+            .documentId('homePage')
+            .title('Page d\'accueil'),
         ),
+      ...S.documentTypeListItems().filter(
+        (item) => item.getId() === 'page',
+      ),
 
       S.divider(),
 
       // ─── Collections ───
-      S.listItem()
-        .title('Collections')
-        .icon(DatabaseIcon)
-        .child(
-          S.list()
-            .title('Collections')
-            .items([
-              S.documentTypeListItem('post').title('Articles'),
-              S.documentTypeListItem('project').title('Projets'),
-              S.documentTypeListItem('author').title('Auteurs'),
-              S.documentTypeListItem('testimonial').title('Témoignages'),
-              S.documentTypeListItem('tool').title('Outils'),
-            ]),
-        ),
+      S.documentTypeListItem('post').title('Articles').icon(DocumentTextIcon),
+      S.documentTypeListItem('project').title('Projets').icon(FolderIcon),
     ])

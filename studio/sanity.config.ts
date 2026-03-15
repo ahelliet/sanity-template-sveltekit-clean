@@ -2,12 +2,14 @@ import { visionTool } from '@sanity/vision'
 import { defineConfig } from 'sanity'
 import { structureTool } from 'sanity/structure'
 import { presentationTool } from 'sanity/presentation'
+import { assist } from '@sanity/assist'
 import { frFRLocale } from '@sanity/locale-fr-fr'
 
 import { schemaTypes } from './schemas'
 import { structure } from './structure'
 import { codeInput } from '@sanity/code-input'
 import { media } from 'sanity-plugin-media'
+import { lucideIconPicker } from 'sanity-plugin-lucide-icon-picker';
 import { dashboardTool, projectInfoWidget, projectUsersWidget } from '@sanity/dashboard'
 
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID!
@@ -25,7 +27,7 @@ export default defineConfig({
         projectUsersWidget(),
       ]
     }),
-    structureTool({structure}),
+    structureTool({ structure }),
     presentationTool({
       previewUrl: {
         origin:
@@ -42,6 +44,8 @@ export default defineConfig({
     visionTool(),
     frFRLocale(),
     codeInput(),
+    lucideIconPicker(),
+    assist()
   ],
   schema: {
     types: schemaTypes,

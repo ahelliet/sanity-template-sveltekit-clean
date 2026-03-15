@@ -1,10 +1,23 @@
 import {defineField, defineType, defineArrayMember} from 'sanity'
 
 export default defineType({
-  name: 'homePage',
-  title: 'Page d\'accueil',
+  name: 'page',
+  title: 'Page',
   type: 'document',
   fields: [
+    defineField({
+      name: 'title',
+      title: 'Titre',
+      type: 'string',
+      validation: (r) => r.required(),
+    }),
+    defineField({
+      name: 'slug',
+      title: 'Slug',
+      type: 'slug',
+      options: {source: 'title', maxLength: 96},
+      validation: (r) => r.required(),
+    }),
     defineField({
       name: 'sections',
       title: 'Sections',
@@ -24,8 +37,12 @@ export default defineType({
     }),
   ],
   preview: {
-    prepare() {
-      return {title: 'Page d\'accueil'}
+    select: {title: 'title', slug: 'slug.current'},
+    prepare({title, slug}) {
+      return {
+        title: title || 'Page',
+        subtitle: `/${slug || ''}`,
+      }
     },
   },
 })

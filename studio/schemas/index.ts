@@ -1,24 +1,26 @@
-import author from './author'
 import blockContent from './blockContent'
 import homePage from './homePage'
+import link from './objects/link'
 import mermaid from './mermaid'
+import page from './page'
 import post from './post'
 import project from './project'
 import siteSettings from './siteSettings'
-import testimonial from './testimonial'
-import tool from './tool'
+import {sectionTypes} from './sections'
 
 export const schemaTypes = [
   // Documents
+  page,
   post,
   project,
-  author,
-  testimonial,
-  tool,
   // Singletons
   siteSettings,
   homePage,
   // Block types
   blockContent,
   mermaid,
+  // Object types
+  link,
+  // Section types
+  ...sectionTypes,
 ]

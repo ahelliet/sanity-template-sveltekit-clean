@@ -2,13 +2,38 @@ import {useCallback} from 'react'
 import {set, unset, useFormValue, type StringInputProps} from 'sanity'
 import {Select, Stack, Card} from '@sanity/ui'
 
+// Dark theme colors mapped from shadcn-svelte tailwind config (oklch converted to hex)
 const styles = [
-  {value: 'link', label: 'Lien texte', bg: 'transparent', color: '#3b82f6', border: 'none', textDecoration: 'underline'},
-  {value: 'default', label: 'Default', bg: '#ea580c', color: '#fff', border: 'none', textDecoration: 'none'},
-  {value: 'secondary', label: 'Secondary', bg: '#262626', color: '#fafafa', border: 'none', textDecoration: 'none'},
-  {value: 'outline', label: 'Outline', bg: 'transparent', color: '#fafafa', border: '1px solid #404040', textDecoration: 'none'},
-  {value: 'ghost', label: 'Ghost', bg: 'transparent', color: '#fafafa', border: 'none', textDecoration: 'none'},
-  {value: 'destructive', label: 'Destructive', bg: '#dc2626', color: '#fff', border: 'none', textDecoration: 'none'},
+  {
+    value: 'link',
+    label: 'Lien texte',
+    css: {color: '#e2e8f0', textDecoration: 'underline', textUnderlineOffset: '4px', background: 'transparent', border: 'none'},
+  },
+  {
+    value: 'default',
+    label: 'Default',
+    css: {background: '#e8e8ec', color: '#131316', border: 'none', boxShadow: '0 1px 2px rgba(0,0,0,0.3)'},
+  },
+  {
+    value: 'secondary',
+    label: 'Secondary',
+    css: {background: '#2a2a35', color: '#f8f8fa', border: 'none', boxShadow: '0 1px 2px rgba(0,0,0,0.3)'},
+  },
+  {
+    value: 'outline',
+    label: 'Outline',
+    css: {background: 'transparent', color: '#f8f8fa', border: '1px solid #3a3a45', boxShadow: '0 1px 2px rgba(0,0,0,0.3)'},
+  },
+  {
+    value: 'ghost',
+    label: 'Ghost',
+    css: {background: 'transparent', color: '#f8f8fa', border: 'none'},
+  },
+  {
+    value: 'destructive',
+    label: 'Destructive',
+    css: {background: '#c43a3a', color: '#ffffff', border: 'none', boxShadow: '0 1px 2px rgba(0,0,0,0.3)'},
+  },
 ]
 
 export function ButtonStyleInput(props: StringInputProps) {
@@ -35,19 +60,21 @@ export function ButtonStyleInput(props: StringInputProps) {
           </option>
         ))}
       </Select>
-      <Card padding={3} radius={2} shadow={1}>
+      <Card padding={3} radius={2} shadow={1} style={{background: '#131316'}}>
         <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
           <span style={{fontSize: '12px', color: '#888'}}>Aperçu :</span>
           <div
             style={{
-              padding: current.value === 'link' ? '0' : '6px 16px',
+              padding: current.value === 'link' ? '0' : '8px 16px',
               borderRadius: '6px',
-              fontSize: '13px',
+              fontSize: '14px',
               fontWeight: 500,
-              background: current.bg,
-              color: current.color,
-              border: current.border,
-              textDecoration: current.textDecoration,
+              lineHeight: '20px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              whiteSpace: 'nowrap',
+              ...current.css,
             }}
           >
             {label || current.label}
